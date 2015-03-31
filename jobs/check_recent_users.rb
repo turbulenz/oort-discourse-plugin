@@ -27,7 +27,7 @@ module Jobs
     def check_user(username)
       backer_username = username
       ## Testing
-      backer_username = "MorrigansRaven"
+      #backer_username = "MorrigansRaven"
 
       #Kernel.puts("Checking #{username}")
       Logster.logger.info("[oort] checking: #{username}")
