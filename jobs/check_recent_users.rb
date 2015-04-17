@@ -103,7 +103,7 @@ module Jobs
       if badge
         user_badge = BadgeGranter.grant(badge, user)
         if (Time.now - user_badge[:granted_at]) < 60
-          if user.title.blank? or @badge_names.include? badge_name
+          if user.title.blank? or @badge_names.include?(user.title)
             # If its new, and they don't currently have a title or are upgrading, set it
             #Kernel.puts("Setting #{username} title to #{badge_name}")
             Logster.logger.info("[oort] Setting #{username} title to #{badge_name}")
