@@ -28,7 +28,15 @@ module Jobs
       begin
         # Who's been recently seen
         users = User.joins(:single_sign_on_record).where("COALESCE(last_seen_at, '2010-01-01') >= CURRENT_TIMESTAMP - ('10 SECONDS'::INTERVAL)").pluck(:username, :external_username)
-        users.each { |u| check_user(u) }
+        users.each do |u|
+          user_recently_checked_key = "oort_recently_checked_#{u[0]}"
+          recently_checked = $redis.get(user_recently_checked_key)
+          if !recently_checked
+            check_user(u)
+            $redis.set(user_recently_checked_key, 1)
+            $redis.expire(user_recently_checked_key, 3 * 60)
+          end
+        end
         # Slowly scan through all users to keep them up-to-date
         last_userid = $redis.get(@userid_scan_key).to_i
         last_userid += 1
@@ -58,7 +66,7 @@ module Jobs
       #backer_username = "smoore"
 
       Kernel.puts("Checking #{username} (#{external_username})")
-      Logster.logger.info("[oort] checking: #{external_username}")
+      Logster.logger.error("[oort] checking: #{external_username}")
 
       # Find their backing tier from the Discovery Server
       #uri = URI.parse("http://office.turbulenz.com:8493/players/#{backer_username}/tier")
@@ -74,11 +82,11 @@ module Jobs
           setup_tier(username, data["tier"])
         else
           Kernel.puts("[oort] error getting tier for: #{backer_username}")
-          Logster.logger.error("[oort] error getting tier for: #{backer_username}")
+          Logster.logger.error("[oort] #{backer_username} has no tier")
         end
       else
-        Kernel.puts("error response code: #{response.code}")
-        Logster.logger.error("[oort] error response code: #{response.code}")
+        Kernel.puts("#{response.code} getting tier for #{backer_username}")
+        Logster.logger.error("[oort] #{response.code} getting tier for #{backer_username}")
       end
     end
 
