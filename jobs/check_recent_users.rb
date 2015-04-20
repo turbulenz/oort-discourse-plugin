@@ -66,7 +66,7 @@ module Jobs
       #backer_username = "smoore"
 
       Kernel.puts("Checking #{username} (#{external_username})")
-      Logster.logger.error("[oort] checking: #{external_username}")
+      Logster.logger.info("[oort] checking: #{external_username}")
 
       # Find their backing tier from the Discovery Server
       #uri = URI.parse("http://office.turbulenz.com:8493/players/#{backer_username}/tier")
