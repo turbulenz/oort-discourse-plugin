@@ -71,7 +71,7 @@ module Jobs
 
       # Find their backing tier from the Discovery Server
       #uri = URI.parse("http://office.turbulenz.com:8493/players/#{backer_username}/tier")
-      uri = URI.parse("https://ds-prealpha.playboundless.com:8902/players/#{backer_username}/tier")
+      uri = URI.parse("https://ds.playboundless.com:8902/players/#{backer_username}/tier")
       Kernel.puts("getting uri: #{uri}")
       response = Net::HTTP.get_response(uri)
       if response.is_a?(Net::HTTPSuccess)
