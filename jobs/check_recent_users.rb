@@ -78,9 +78,13 @@ module Jobs
         data = JSON.parse(response.body)
         Kernel.puts(data.inspect)
         Kernel.puts(data["tier"])
-        if data["tier"] > 0
-          Kernel.puts("Tier = #{data['tier']}")
-          setup_tier(username, data["tier"])
+        tier = data["tier"]
+        if tier.is_a?(String)
+         tier = tier.to_i
+        end
+        if tier > 0
+          Kernel.puts("Tier = #{tier}")
+          setup_tier(username, tier)
         else
           Kernel.puts("[oort] error getting tier for: #{backer_username}")
           Logster.logger.error("[oort] #{backer_username} has no tier")
